@@ -55,7 +55,7 @@ int user_offset(int fd, int user_ID){
         return -1;
     }
     struct flock lock;
-    setLockCust(fd, lock);
+    read_lock(fd, lock);
     struct pds P;
 
     while (read(fd, &P, sizeof(struct pds))){
@@ -69,9 +69,9 @@ int user_offset(int fd, int user_ID){
 }
 
 void file_open(int record_fd, int user_fd, int admin_fd, int cart_fd){
-    int record_fd = open("records.txt", O_RDWR | O_CREAT, 0777);
-    int cart_fd = open("carts.txt", O_RDWR | O_CREAT, 0777);
-    int user_fd = open("users.txt", O_RDWR | O_CREAT, 0777);
-    int admin_fd = open("admin.txt", O_RDWR | O_CREAT, 0777);
+    record_fd = open("records.txt", O_RDWR | O_CREAT, 0777);
+    cart_fd = open("carts.txt", O_RDWR | O_CREAT, 0777);
+    user_fd = open("users.txt", O_RDWR | O_CREAT, 0777);
+    admin_fd = open("admin.txt", O_RDWR | O_CREAT, 0777);
     lseek(admin_fd, 0, SEEK_END);
 }

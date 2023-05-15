@@ -17,5 +17,6 @@ struct cart{
 void print_prod(struct product node);
 struct product take_input();
 void get_all_products(int sock_fd);
+void post_products(int sock_fd, int record_fd);
 
 #endif

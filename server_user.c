@@ -1,24 +1,10 @@
 #include"server_user.h"
 
-void post_products(int sock_fd, int record_fd){
-    struct flock lock;
-    read_lock(record_fd, lock);
-    struct product prod;
-    while(read(record_fd, &prod, sizeof(struct product))){
-        if(prod.P_ID != -1){
-            write(sock_fd, &prod, sizeof(struct product));
-        }
-    }
-    prod.P_ID = -1;
-    write(sock_fd, &prod, sizeof(struct product));
-    unlock(record_fd, lock);
-}
-
 void post_cart(int sock_fd, int cart_fd, int user_fd){
     int user_ID, offset;
     if(read(sock_fd, &user_ID, sizeof(int)) < 0){
         perror("ERROR: Couldn't read Read");
-        exit(1);
+        // exit(1);
     }
     offset = user_offset(cart_fd, user_ID);
     struct cart cart;
@@ -85,12 +71,12 @@ void post_pe(int sock_fd, int cart_fd, int record_fd, int user_fd){
     read(cart_fd, &cart, sizeof(struct cart));
     unlock(cart_fd, lock);
     write(sock_fd, &cart, sizeof(struct cart));
-    int total = 0;
+    float total = 0.0;
     for(int i = 0; i < MAX_PRODS_IN_CART; i++){
         if(cart.prod_list[i].P_ID != -1){
             write(sock_fd, &cart.prod_list[i].qty, sizeof(int));
             struct flock lock;
-            productReadLock(record_fd, lock);
+            read_lock(record_fd, lock);
             lseek(record_fd, 0, SEEK_SET);
             struct product prod;
             int check = 0;
@@ -152,7 +138,7 @@ void post_pe(int sock_fd, int cart_fd, int record_fd, int user_fd){
     unlock(cart_fd, lock);
     read(sock_fd, &total, sizeof(float));
     read(sock_fd, &cart, sizeof(struct cart));
-    int record = open("rec.txt", O_CREAT | O_RDWR, 0777);
+    int record = open("records.txt", O_CREAT | O_RDWR, 0777);
     write(record, "|     P_ID     |     NAME     |     QNTY     |     COST     |", sizeof("|     P_ID     |     NAME     |     QNTY     |     COST     |"));
     char temp[100];
     for (int i = 0; i < MAX_PRODS_IN_CART; i++){
@@ -245,7 +231,7 @@ void add_product_to_cart(int sock_fd, int cart_fd, int record_fd, int user_fd){
         }
     }
     unlock(cart_fd, lock);
-    unlock(read_lock, lock_product);
+    unlock(record_fd, lock_product);
     if(!check){
         write(sock_fd, "FAIL", sizeof("FAIL"));
     }

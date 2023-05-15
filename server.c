@@ -17,6 +17,30 @@ int main()
         {
             while (1)
             {
+                int choice;
+                read(accept_sock_fd, &choice, sizeof(int));
+                lseek(record_fd, 0, SEEK_SET);
+                lseek(cart_fd, 0, SEEK_SET);
+                lseek(user_fd, 0, SEEK_SET);
+                if(menue_choice == 1){
+                    add_products(accept_sock_fd, admin_fd, record_fd);
+            }else if(menue_choice == 2){
+                int P_ID;
+                read(accept_sock_fd, &P_ID, sizeof(int));
+                delete_products(accept_sock_fd, admin_fd, record_fd, P_ID);
+            }else if(menue_choice == 3){
+                update_products_cost(accept_sock_fd, admin_fd, record_fd);
+            }else if(menue_choice == 4){
+                update_products_qty(accept_sock_fd, admin_fd, record_fd);
+            }else if(menue_choice == 5){
+                post_products(accept_sock_fd, record_fd);
+            }else if(menue_choice == 6){
+                close_socket(accept_sock_fd);
+                generate_receipt(admin_fd, record_fd);
+            }
+            else{
+                continue;
+            }
             }
         }
         else if (menue_choice == USER){
@@ -27,29 +51,34 @@ int main()
                 lseek(cart_fd, 0, SEEK_SET);
                 lseek(user_fd, 0, SEEK_SET);
                 if (choice == 1){
-                    // get_all_products(sock_fd);
+                    post_products(accept_sock_fd, record_fd);
                 }
                 else if (choice == 2){
-                    // get_cart(user_ID, sock_fd);
+                    post_cart(accept_sock_fd, cart_fd, user_fd);
                 }
                 else if (choice == 3){
-                    // printf("Enter the details for the product you want to buy: \n");
-                    // add_item_to_cart(user_ID, sock_fd, take_input());// see if it works properly
+                    add_product_to_cart(accept_sock_fd, cart_fd, record_fd, user_fd);
                 }
                 else if (choice == 4){
-                    // update_cart(sock_fd, user_ID);
+                    edit_cart(accept_sock_fd, cart_fd, record_fd, user_fd);
                 }
                 else if (choice == 5){
-                    // pay_for_cart(sock_fd, user_ID);
+                    post_pe(accept_sock_fd, cart_fd, record_fd, user_fd);
                 }
                 else if (choice == 6){
-                    // register_customer(sock_fd);
+                    add_user(accept_sock_fd, cart_fd, user_fd);
                 }
                 else if (choice == 7){
-                    // instead, make the go back thing using clear screen
-                    //  break;
+                    close_socket(accept_sock_fd);
+                    break;
+                }
+                else{
+                    continue;
                 }
             }
+        }
+        else{
+            close_socket(accept_sock_fd);
         }
     }
     return 0;

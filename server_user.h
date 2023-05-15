@@ -2,8 +2,9 @@
 #define SERV_USER
 #include"locks.h"
 #include"product.h"
+#include<stdlib.h>
 
-void post_products(int sock_fd, int record_fd);
+//post_products()
 void post_cart(int sock_fd, int cart_fd, int user_fd);
 void add_product_to_cart(int sock_fd, int cart_fd, int record_fd, int user_fd);
 void edit_cart(int sock_fd, int cart_fd, int record_fd, int user_fd);

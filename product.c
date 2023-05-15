@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <string.h>
+#include"locks.h"
 
 void print_prod(struct product prod){
     printf("P_ID: %d\nP_Name: %s\nCost: %f\nQuantity: %d", prod.P_ID, prod.P_Name, prod.cost, prod.qty);
@@ -28,7 +29,19 @@ struct product take_input(){
     return input_prod;
 }
 
-
+void post_products(int sock_fd, int record_fd){
+    struct flock lock;
+    read_lock(record_fd, lock);
+    struct product prod;
+    while(read(record_fd, &prod, sizeof(struct product))){
+        if(prod.P_ID != -1){
+            write(sock_fd, &prod, sizeof(struct product));
+        }
+    }
+    prod.P_ID = -1;
+    write(sock_fd, &prod, sizeof(struct product));
+    unlock(record_fd, lock);
+}
 
 void get_all_products(int sock_fd){
     while(1){
