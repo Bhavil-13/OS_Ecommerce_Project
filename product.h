@@ -5,7 +5,7 @@
 
 struct product{
     int P_ID, qty;
-    char *P_Name;
+    char P_Name[20];
     float cost;
 };
 

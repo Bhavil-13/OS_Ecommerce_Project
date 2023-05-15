@@ -23,6 +23,7 @@ int main()
                 lseek(cart_fd, 0, SEEK_SET);
                 lseek(user_fd, 0, SEEK_SET);
                 if(menue_choice == 1){
+                    printf("Adding product, choice was: %d", choice);
                     add_products(accept_sock_fd, admin_fd, record_fd);
             }else if(menue_choice == 2){
                 int P_ID;

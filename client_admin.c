@@ -19,8 +19,21 @@ void error(const char *msg){
 
 void add_product(int sock_fd){
     struct product prod;
-    prod = take_input();
+    // prod = take_input();
+    printf("Enter the P_ID: ");
+    scanf("%d", &prod.P_ID);
+    printf("Enter product quantity: ");
+    scanf("%d", &prod.qty);
+    //the next 2 will be changed, they will be mapped with P_ID and we won't have to take them in input.
+    printf("Enter product cost: ");
+    scanf("%f", &prod.cost);
+    printf("Enter product name: ");
+    // scanf("%[^\n]%*c", prod.P_Name);
+    fgets(prod.P_Name, 20, stdin);
+    // scanf("%s", prod.P_Name);
+    printf("Writing...");
     write(sock_fd, &prod, sizeof(struct product));
+    printf("Done!");
     char res[4];
     read(sock_fd, res, sizeof(res));
     if(strcmp(res, "FAIL")){
