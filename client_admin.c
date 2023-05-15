@@ -2,6 +2,15 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <errno.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <string.h>
 
 void error(const char *msg){
     perror(msg);
@@ -19,8 +28,8 @@ void add_product(int sock_fd){
     }
 }
 
-void delete_product(int sock_fd, struct product prod){
-    write(sock_fd, &prod.P_ID, sizeof(struct product));
+void delete_product(int sock_fd, int P_ID){
+    write(sock_fd, &P_ID, sizeof(int));
     char res[4];
     read(sock_fd, res, sizeof(res));
     if(strcmp(res, "FAIL")){

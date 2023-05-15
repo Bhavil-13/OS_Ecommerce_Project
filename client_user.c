@@ -1,16 +1,20 @@
 #include"client_user.h"
 #include<stdio.h>
 #include<string.h>
+#include<stdlib.h>
+#include<unistd.h>
+#include<sys/socket.h>
+#include<netinet/in.h>
 
-void error(const char *msg){
-    perror(msg);
-    exit(1);
-}
+// void error(const char *msg){
+//     perror(msg);
+//     exit(1);
+// }
 
 int get_user_ID(){
     printf("Enter the user ID: ");
     int user_id;
-    scanf("%d", user_id);
+    scanf("%d", &user_id);
     return user_id;
 }
 
@@ -20,7 +24,7 @@ void get_cart(int user_ID, int sock_fd){
     struct cart user_cart;
     read(sock_fd, &user_cart, sizeof(struct cart));
     if(user_cart.user_ID < 0){
-        error("Invalid ID");
+        perror("Invalid ID");
     }
     else{
         printf("Customer ID: %d", user_cart.user_ID);
@@ -36,7 +40,7 @@ void add_item_to_cart(int user_ID, int sock_fd, struct product prod){
     int res;
     read(sock_fd, &res, sizeof(int));
     if(res < 0){
-        error("Invalid user_ID");
+        perror("Invalid user_ID");
     }
     write(sock_fd, &prod, sizeof(struct product));
     char response[4];// either OKAY or FAIL
@@ -44,21 +48,29 @@ void add_item_to_cart(int user_ID, int sock_fd, struct product prod){
     if(strncmp(response, "OKAY", 4)){
         printf("Successfully Added product with P_ID: %d to the cart", prod.P_ID);
     }else{
-        error("Couldn't add to the cart!");
+        perror("Couldn't add to the cart!");
     }
 }
 
-void update_cart(int user_ID, int sock_fd, struct product old_prod, struct product new_prod){
+void update_cart(int sock_fd, int user_ID){
     write(sock_fd, &user_ID, sizeof(int));
     sleep(1);
     int res;
     read(sock_fd, &res, sizeof(int));
     if(res < 0){
-        error("Invalid user_ID");
+        perror("Invalid user_ID");
     }
-    /*
-    Do the Update here
-    */
+    struct product temp_prod;
+    temp_prod = take_input();
+    write(sock_fd, &temp_prod, sizeof(struct product));
+    char resp[4];
+    read(sock_fd, resp, sizeof(resp));
+    if(strcmp(resp, "FAIL")){
+        perror("Couldn't update your cart");
+    }else{
+        printf("Successfully updated you cart's product to: ");
+        print_prod(temp_prod);
+    }
 }
 
 void pay_for_cart(int sock_fd, int user_ID){
@@ -66,10 +78,10 @@ void pay_for_cart(int sock_fd, int user_ID){
     int res;
     read(sock_fd, &res, sizeof(int));
     if(res < 0){
-        error("Invalid user_ID");
+        perror("Invalid user_ID");
     }
     struct cart user_cart;
-    read(sock_fd, &user_cart, sizeof(user_cart));
+    read(sock_fd, &user_cart, sizeof(struct cart));
     int ordered, final_ordered, cost;
     //final_ordered, in case ordered is more that the total amount of product,
     //then we will get the total amount instead of an error.
@@ -79,7 +91,7 @@ void pay_for_cart(int sock_fd, int user_ID){
             read(sock_fd, &final_ordered, sizeof(int));
             read(sock_fd, &cost, sizeof(int));
             printf("|     ITEM     |     QTY     |     PRICE     |");
-            printf("     %s:     |     %d     |     %f", user_cart.prod_list[i].P_Name, final_ordered, cost * final_ordered);
+            printf("     %s:     |     %d     |     %d", user_cart.prod_list[i].P_Name, final_ordered, cost * final_ordered);
             user_cart.prod_list[i].cost = cost;
             user_cart.prod_list[i].qty = final_ordered;
         }
@@ -89,9 +101,9 @@ void pay_for_cart(int sock_fd, int user_ID){
     printf("After Tax Price            |     %f\n", checkout_price*1.15);
     printf("PAY: ");
     float payment;
-    scanf("%f", payment);
+    scanf("%f", &payment);
     if(payment != checkout_price * 1.15){
-        error("Insufficient Balance");
+        perror("Insufficient Balance");
     }
     printf("Payment Successful");
     char ch = 'y';
@@ -116,7 +128,7 @@ void generate_reciept(int sock_fd, struct cart user_cart, float total){
 }
 
 void register_customer(int sock_fd){
-    char ch = 'y';
+    char ch = 'r';
     write(sock_fd, &ch, sizeof(char));
     int id;
     printf("Registering new customer...\n");

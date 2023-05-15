@@ -8,10 +8,10 @@
 #include<netinet/in.h>
 #include<netdb.h>
 
-void error(const char *msg){
-    perror(msg);
-    exit(1);
-}
+// void error(const char *msg){
+//     perror(msg);
+//     exit(1);
+// }
 
 int server_connect(int socket_fd, int port_no){
     //server_side connect
@@ -22,7 +22,7 @@ int server_connect(int socket_fd, int port_no){
     printf("Creating a Socket...\n");
     socket_fd = socket(AF_INET, SOCK_STREAM, 0);
     if(socket_fd < 0){
-        error("Error opening the socket");
+        perror("Error opening the socket");
         return -1;
     }
     printf("Successfully created a socket with socket_fd: %d\n", socket_fd);
@@ -32,7 +32,7 @@ int server_connect(int socket_fd, int port_no){
     serv_addr.sin_port = htons(port_no);
     printf("Binding to port number: %d\n", port_no);
     if(bind(socket_fd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0){
-        error("Binding failed");
+        perror("Binding failed");
         return -1;
     }
     printf("Successfully binded\nNow listening...\n");
@@ -40,7 +40,7 @@ int server_connect(int socket_fd, int port_no){
     clilen = sizeof(cli_addr);
     newsockfd = accept(socket_fd, (struct sockaddr *) &cli_addr, &clilen);
     if(newsockfd < 0){
-        error("Error in accept");
+        perror("Error in accept");
         return -1;
     }
     printf("Accepted the connection!");
@@ -48,13 +48,13 @@ int server_connect(int socket_fd, int port_no){
 }
 
 int client_connect(int socket_fd, int port_no){
-    int socket_fd, n;
+    int n;
     struct sockaddr_in serv_addr;
     struct hostent *server;
     printf("Creating a Socket...\n");
     socket_fd = socket(AF_INET, SOCK_STREAM, 0);
     if(socket_fd < 0){
-        error("Error opening the socket");
+        perror("Error opening the socket");
         return -1;
     }
     printf("Successfully created a socket with socket_fd: %d\n", socket_fd);
@@ -70,7 +70,7 @@ int client_connect(int socket_fd, int port_no){
     serv_addr.sin_port = htons(port_no);
     printf("Connecting...");
     if(connect(socket_fd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0){
-        error("Connection failed");
+        perror("Connection failed");
         return -1;
     }
     printf("Connected!");

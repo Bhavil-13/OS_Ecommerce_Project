@@ -1,5 +1,14 @@
 #include"product.h"
 #include<stdio.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <errno.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <string.h>
 
 void print_prod(struct product prod){
     printf("P_ID: %d\nP_Name: %s\nCost: %f\nQuantity: %d", prod.P_ID, prod.P_Name, prod.cost, prod.qty);
@@ -15,7 +24,7 @@ struct product take_input(){
     printf("Enter product cost: ");
     scanf("%f", &input_prod.cost);
     printf("Enter product name: ");
-    scanf("%s", &input_prod.P_Name);
+    scanf("%s", input_prod.P_Name);
     return input_prod;
 }
 

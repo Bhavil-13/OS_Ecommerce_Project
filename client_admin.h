@@ -3,7 +3,7 @@
 #include"product.h"
 
 void add_product(int sock_fd);
-void delete_product(int sock_fd, struct product prod);
+void delete_product(int sock_fd, int P_ID);
 void update_price(int sock_fd);
 void update_quantity(int sock_fd);
 

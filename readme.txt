@@ -1,0 +1,1 @@
+gcc client_admin.c client_admin.h client_user.c client_user.h client.c connect_socket.c connect_socket.h login.h menues.c menues.h product.c product.h read_write_shm.c read_write_shm.h sending_requests.h server.h shm.c shm.h
